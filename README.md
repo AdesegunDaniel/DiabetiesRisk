@@ -1,7 +1,10 @@
 
 # DiabetiseRisk Model
 
-The DiabetiseRisk model is a robust logistic regression algorithm designed to predict the risk of diabetes based on various medical and lifestyle factors.
+![alt text](dia.png)
+
+
+The DiabetiseRisk model is a robust logistic regression algorithm designed to predict the risk of diabetes based on various medical and lifestyle factors. Utilizing advanced statistical techniques, this model provides healthcare professionals with accurate and actionable insights, aiding in early diagnosis and preventative care strategies
 
 ## Key Features
 
