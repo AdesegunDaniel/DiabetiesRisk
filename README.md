@@ -18,8 +18,8 @@ To get started with the DiabetiseRisk model, follow these steps:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/AdesegunDaniel/_BiologyRunto.git
-   cd _BiologyRunto
+   git clone https:
+   cd _
    ```
 
 2. **Install dependencies**:
