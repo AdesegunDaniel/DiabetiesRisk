@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetiseRisk</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-image: url("{{ url_for('static', filename='dia_img1.png')}}"); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 1200px;
+            border: 2px solid #000; /* Add border for visibility */
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            margin-bottom: 5px;
+        }
+        input[type="number"], input[type="text"], select {
+            width: 200px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .result-container {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #000; /* Add border for visibility */
+        }
+        .loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+    <script>
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+        }
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+        }
+        function showResult(result) {
+            document.getElementById('result').innerText = 'Predicted Risk: ' + result;
+            document.getElementById('result-container').style.display = 'block';
+        }
+        function validateForm() {
+            const form = document.forms["diabetesForm"];
+            const requiredFields = ["gender", "pregnancy", "glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI", "DiabetesPedigreeFunction", "Age"];
+            for (let i = 0; i < requiredFields.length; i++) {
+                const field = form[requiredFields[i]];
+                if (field.value === "") {
+                    alert("Please fill all the required fields before submitting.");
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <h1>DiabetiseRisk</h1>
+            <p>Designed to predict the risk of diabetes by analyzing various health parameters. By taking into account factors such as pregnancy, glucose levels, blood pressure, skin thickness, insulin levels, BMI, diabetes pedigree function, and age, the model can provide an estimate of the diabetes risk.</p>
+            <p><strong>Note:</strong> This model is intended for use by medical personnel only. Please input the patient's data below to predict the risk of diabetes.</p>
+            <form name="diabetesForm" action="{{ url_for('predict') }}" method="post" onsubmit="return validateForm() && showLoader()">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="patientName">Patient Name</label>
+                        <input type="text" id="patientName" name="patientName">
+                    </div>
+                    <div class="input-group">
+                        <label for="clinicCardNumber">Clinic Card Number</label>
+                        <input type="text" id="clinicCardNumber" name="clinicCardNumber">
+                    </div>
+                    <div class="input-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="pregnancy">Pregnancy count</label>
+                        <input type="number" id="pregnancy" name="pregnancy" value="0" min="0" max="17" step="1" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="glucose">Glucose(mg/dL)</label>
+                        <input type="number" id="glucose" name="glucose" value="0" min="0" max="199" step="5" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="BloodPressure">Blood Pressure(mmHg)</label>
+                        <input type="number" id="BloodPressure" name="BloodPressure" value="0" min="0" max="122" step="0.2" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="SkinThickness">Skin Thickness(nm)</label>
+                        <input type="number" id="SkinThickness" name="SkinThickness" value="0" min="0" max="99" step="0.5" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Insulin">Insulin dosage(U/mL)</label>
+                        <input type="number" id="Insulin" name="Insulin" value="0" min="0" max="846" step="10" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="BMI">BMI(kg/m²)</label>
+                        <input type="number" id="BMI" name="BMI" value="0" min="0" max="70" step="1" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="DiabetesPedigreeFunction">Diabetes Pedigree Function</label>
+                        <input type="number" id="DiabetesPedigreeFunction" name="DiabetesPedigreeFunction" value="0" min="0" max="3" step="0.01" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Age">Age</label>
+                        <input type="number" id="Age" name="Age" value="0" min="0" max="100" step="1" required>
+                    </div>
+                </div>
+                <button type="submit">Predict Risk</button>
+                <div id="loader" class="loader"></div>
+            </form>
+        </div>
+        <div id="result-container" class="result-container">
+            <p id="result">{{ prediction_text }}</p>
+        </div>
+        <div class="footer">Model built by Adesegun Oluwademilade Daniel</div>
+    </div>
+</body>
+</html>
